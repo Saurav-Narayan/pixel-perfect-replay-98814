@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnimalsRouteImport } from './routes/animals'
 import { Route as CommunityRouteImport } from './routes/community'
+import { Route as CropDiseasesRouteImport } from './routes/crop-diseases'
 import { Route as CropsRouteImport } from './routes/crops'
 import { Route as PracticesRouteImport } from './routes/practices'
 import { Route as SchemesRouteImport } from './routes/schemes'
@@ -29,6 +30,11 @@ const AnimalsRoute = AnimalsRouteImport.update({
 const CommunityRoute = CommunityRouteImport.update({
   id: '/community',
   path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CropDiseasesRoute = CropDiseasesRouteImport.update({
+  id: '/crop-diseases',
+  path: '/crop-diseases',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CropsRoute = CropsRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/animals': typeof AnimalsRoute
   '/community': typeof CommunityRoute
+  '/crop-diseases': typeof CropDiseasesRoute
   '/crops': typeof CropsRoute
   '/practices': typeof PracticesRoute
   '/schemes': typeof SchemesRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/animals': typeof AnimalsRoute
   '/community': typeof CommunityRoute
+  '/crop-diseases': typeof CropDiseasesRoute
   '/crops': typeof CropsRoute
   '/practices': typeof PracticesRoute
   '/schemes': typeof SchemesRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/animals': typeof AnimalsRoute
   '/community': typeof CommunityRoute
+  '/crop-diseases': typeof CropDiseasesRoute
   '/crops': typeof CropsRoute
   '/practices': typeof PracticesRoute
   '/schemes': typeof SchemesRoute
@@ -75,14 +84,28 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/animals' | '/community' | '/crops' | '/practices' | '/schemes'
+    | '/'
+    | '/animals'
+    | '/community'
+    | '/crop-diseases'
+    | '/crops'
+    | '/practices'
+    | '/schemes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/animals' | '/community' | '/crops' | '/practices' | '/schemes'
+  to:
+    | '/'
+    | '/animals'
+    | '/community'
+    | '/crop-diseases'
+    | '/crops'
+    | '/practices'
+    | '/schemes'
   id:
     | '__root__'
     | '/'
     | '/animals'
     | '/community'
+    | '/crop-diseases'
     | '/crops'
     | '/practices'
     | '/schemes'
@@ -92,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnimalsRoute: typeof AnimalsRoute
   CommunityRoute: typeof CommunityRoute
+  CropDiseasesRoute: typeof CropDiseasesRoute
   CropsRoute: typeof CropsRoute
   PracticesRoute: typeof PracticesRoute
   SchemesRoute: typeof SchemesRoute
@@ -118,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/community'
       fullPath: '/community'
       preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crop-diseases': {
+      id: '/crop-diseases'
+      path: '/crop-diseases'
+      fullPath: '/crop-diseases'
+      preLoaderRoute: typeof CropDiseasesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/crops': {
@@ -148,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnimalsRoute: AnimalsRoute,
   CommunityRoute: CommunityRoute,
+  CropDiseasesRoute: CropDiseasesRoute,
   CropsRoute: CropsRoute,
   PracticesRoute: PracticesRoute,
   SchemesRoute: SchemesRoute,

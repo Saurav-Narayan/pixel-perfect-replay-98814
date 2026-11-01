@@ -15,6 +15,7 @@ import { useAdvisor } from "@/components/home/AdvisorProvider";
 
 const learn = [
   { to: "/crops", key: "nav.crops" },
+  { to: "/crop-diseases", key: "nav.diseases" },
   { to: "/animals", key: "nav.animals" },
   { to: "/practices", key: "nav.practices" },
 ] as const;
