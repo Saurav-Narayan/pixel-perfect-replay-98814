@@ -1,14 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlaceholderPage } from "@/components/site/PlaceholderPage";
+import { SchemesView } from "@/components/schemes/SchemesView";
 
 export const Route = createFileRoute("/schemes")({
   head: () => ({
     meta: [
-      { title: "Schemes — Krishi Setu" },
-      { name: "description", content: "Government schemes for farmers, explained simply. Coming soon." },
-      { property: "og:title", content: "Schemes — Krishi Setu" },
-      { property: "og:description", content: "Government schemes for farmers, explained simply. Coming soon." },
+      { title: "Government Schemes — Krishi Setu" },
+      { name: "description", content: "Agricultural and livestock schemes for Indian farmers." },
+      { property: "og:title", content: "Government Schemes — Krishi Setu" },
+      { property: "og:description", content: "Agricultural and livestock schemes for Indian farmers." },
     ],
   }),
-  component: () => <PlaceholderPage titleKey="nav.schemes" />,
+  component: () => (
+    <div className="min-h-screen bg-background pt-24 pb-20 px-4">
+      <SchemesView />
+    </div>
+  ),
 });

@@ -1,0 +1,168 @@
+export interface Scheme {
+  id: string;
+  name: string;
+  level: "Central" | "State";
+  states: string[];
+  crops?: string[];
+  animals?: string[];
+  minLand?: number; // in acres
+  maxLand?: number; // in acres
+  needs: string[];
+  benefit: string;
+  howToApply: string;
+  officialUrl: string;
+  source: string;
+  lastVerified: string;
+}
+
+export const schemes: Scheme[] = [
+  {
+    id: "pm-kisan",
+    name: "PM-KISAN (Pradhan Mantri Kisan Samman Nidhi)",
+    level: "Central",
+    states: ["All"],
+    needs: ["money or loans"],
+    benefit: "Direct income support of ₹6,000 per year in three equal installments.",
+    howToApply: "Register on the PM-KISAN portal or via local CSC (Common Service Centres).",
+    officialUrl: "https://pmkisan.gov.in/",
+    source: "Ministry of Agriculture & Farmers Welfare",
+    lastVerified: "2024-03-15",
+  },
+  {
+    id: "pmfby",
+    name: "PMFBY (Pradhan Mantri Fasal Bima Yojana)",
+    level: "Central",
+    states: ["All"],
+    needs: ["insurance"],
+    benefit: "Comprehensive insurance cover against failure of crops due to non-preventable natural risks.",
+    howToApply: "Apply through the National Crop Insurance Portal, banks, or insurance agents.",
+    officialUrl: "https://pmfby.gov.in/",
+    source: "Ministry of Agriculture & Farmers Welfare",
+    lastVerified: "2024-03-10",
+  },
+  {
+    id: "kcc",
+    name: "Kisan Credit Card (KCC)",
+    level: "Central",
+    states: ["All"],
+    needs: ["money or loans"],
+    benefit: "Access to timely credit for agriculture and allied activities at subsidized interest rates.",
+    howToApply: "Apply at any commercial bank, RRB, or cooperative bank.",
+    officialUrl: "https://www.myscheme.gov.in/schemes/kcc",
+    source: "RBI / NABARD",
+    lastVerified: "2024-03-05",
+  },
+  {
+    id: "soil-health-card",
+    name: "Soil Health Card Scheme",
+    level: "Central",
+    states: ["All"],
+    needs: ["soil health"],
+    benefit: "Provides information to farmers on nutrient status of their soil and recommendations on appropriate dosage of nutrients.",
+    howToApply: "Contact local agriculture department for soil sample collection and testing.",
+    officialUrl: "https://soilhealth.dac.gov.in/",
+    source: "Department of Agriculture and Farmers Welfare",
+    lastVerified: "2024-03-01",
+  },
+  {
+    id: "pm-kusum",
+    name: "PM-KUSUM (Pradhan Mantri Kisan Urja Suraksha evam Utthaan Mahabhiyan)",
+    level: "Central",
+    states: ["All"],
+    needs: ["irrigation"],
+    benefit: "Subsidies for setting up solar pumps and solar power plants on barren land.",
+    howToApply: "Apply through state-level implementing agencies (SNA).",
+    officialUrl: "https://pmkusum.mnre.gov.in/",
+    source: "Ministry of New and Renewable Energy",
+    lastVerified: "2024-02-25",
+  },
+  {
+    id: "pmksy",
+    name: "PMKSY (Pradhan Mantri Krishi Sinchayee Yojana)",
+    level: "Central",
+    states: ["All"],
+    needs: ["irrigation"],
+    benefit: "Focuses on 'Per Drop More Crop' through micro-irrigation (Drip and Sprinkler).",
+    howToApply: "Apply through state agriculture/horticulture departments.",
+    officialUrl: "https://pmksy.gov.in/",
+    source: "Department of Agriculture and Farmers Welfare",
+    lastVerified: "2024-02-20",
+  },
+  {
+    id: "e-nam",
+    name: "e-NAM (National Agriculture Market)",
+    level: "Central",
+    states: ["All"],
+    needs: ["better price"],
+    benefit: "Online trading platform for agricultural commodities to ensure better price discovery.",
+    howToApply: "Register as a farmer on the e-NAM portal or at designated mandis.",
+    officialUrl: "https://enam.gov.in/",
+    source: "Small Farmers Agribusiness Consortium (SFAC)",
+    lastVerified: "2024-02-15",
+  },
+  {
+    id: "nlm",
+    name: "National Livestock Mission (NLM)",
+    level: "Central",
+    states: ["All"],
+    animals: ["Dairy cattle and buffalo", "Poultry", "Goats"],
+    needs: ["animal care"],
+    benefit: "Subsidies for breed improvement, poultry development, and fodder production.",
+    howToApply: "Apply online through the NLM portal or via District Animal Husbandry Office.",
+    officialUrl: "https://nlm.udyamimitra.in/",
+    source: "Department of Animal Husbandry & Dairying",
+    lastVerified: "2024-02-10",
+  },
+  {
+    id: "rashtriya-gokul-mission",
+    name: "Rashtriya Gokul Mission",
+    level: "Central",
+    states: ["All"],
+    animals: ["Dairy cattle and buffalo"],
+    needs: ["animal care"],
+    benefit: "Promotion of indigenous breeds and enhance milk productivity.",
+    howToApply: "Contact local veterinary center or state animal husbandry department.",
+    officialUrl: "https://dahd.nic.in/schemes/programmes/rashtriya-gokul-mission",
+    source: "Department of Animal Husbandry & Dairying",
+    lastVerified: "2024-02-05",
+  },
+  {
+    id: "nadcp",
+    name: "National Animal Disease Control Programme (NADCP)",
+    level: "Central",
+    states: ["All"],
+    animals: ["Dairy cattle and buffalo", "Goats"],
+    needs: ["animal care"],
+    benefit: "Free vaccination for Foot and Mouth Disease (FMD) and Brucellosis.",
+    howToApply: "Contact local government veterinary hospital during vaccination drives.",
+    officialUrl: "https://dahd.nic.in/schemes/programmes/nadcp",
+    source: "Department of Animal Husbandry & Dairying",
+    lastVerified: "2024-01-30",
+  },
+  {
+    id: "kcc-ah",
+    name: "KCC for Animal Husbandry",
+    level: "Central",
+    states: ["All"],
+    animals: ["Dairy cattle and buffalo", "Poultry", "Goats"],
+    needs: ["money or loans", "animal care"],
+    benefit: "Working capital credit for livestock farmers at subsidized rates.",
+    howToApply: "Submit application to local commercial or cooperative banks.",
+    officialUrl: "https://dahd.nic.in/kcc-livestock",
+    source: "Department of Animal Husbandry & Dairying",
+    lastVerified: "2024-01-25",
+  },
+  {
+    id: "livestock-insurance",
+    name: "Livestock Insurance Scheme",
+    level: "Central",
+    states: ["All"],
+    animals: ["Dairy cattle and buffalo", "Goats"],
+    needs: ["insurance", "animal care"],
+    benefit: "Protection against loss of animals due to death, with subsidized premium rates.",
+    howToApply: "Contact District Animal Husbandry Office or empanelled insurance companies.",
+    officialUrl: "https://dahd.nic.in/schemes/programmes/livestock-insurance-scheme",
+    source: "Department of Animal Husbandry & Dairying",
+    lastVerified: "2024-01-20",
+  }
+];

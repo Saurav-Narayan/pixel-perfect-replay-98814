@@ -1,14 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlaceholderPage } from "@/components/site/PlaceholderPage";
+import { CommunityView } from "@/components/community/CommunityView";
 
 export const Route = createFileRoute("/community")({
   head: () => ({
     meta: [
       { title: "Community — Krishi Setu" },
-      { name: "description", content: "Questions and answers from farmers. Coming soon to Krishi Setu." },
+      { name: "description", content: "Ask questions and get answers from farmers and agricultural experts." },
       { property: "og:title", content: "Community — Krishi Setu" },
-      { property: "og:description", content: "Questions and answers from farmers. Coming soon to Krishi Setu." },
+      { property: "og:description", content: "Ask questions and get answers from farmers and agricultural experts." },
     ],
   }),
-  component: () => <PlaceholderPage titleKey="nav.community" />,
+  component: () => (
+    <div className="min-h-screen bg-background pt-24 pb-20 px-4">
+      <CommunityView />
+    </div>
+  ),
 });

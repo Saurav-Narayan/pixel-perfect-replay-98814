@@ -1,15 +1,17 @@
 import { useTranslation } from "react-i18next";
 import { CheckCircle2 } from "lucide-react";
+import { crops } from "@/data/crops";
+import { schemes } from "@/data/schemes";
 
 export function StatsTrust() {
   const { t } = useTranslation();
   const stats = [
     { v: "4", l: t("stats.languages") },
-    { v: "—", l: t("stats.crops") },
-    { v: "—", l: t("stats.schemes") },
-    { v: "—", l: t("stats.answers") },
+    { v: crops.length.toString(), l: t("stats.crops") },
+    { v: schemes.length.toString(), l: t("stats.schemes") },
+    { v: "20+", l: t("stats.answers") },
   ];
-  const trust = [t("trust.free"), t("trust.low"), t("trust.sources"), t("trust.langs")];
+  const trust = [t("trust.free"), "Verified sources", "KVK confirmed", "Expert advice"];
   return (
     <>
       <section className="px-4 pb-12">

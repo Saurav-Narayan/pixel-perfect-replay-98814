@@ -19,6 +19,7 @@ import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { LanguageGate } from "@/components/site/LanguageGate";
 import { ComingSoonProvider } from "@/components/site/ComingSoon";
+import { AdvisorProvider } from "@/components/home/AdvisorProvider";
 
 function NotFoundComponent() {
   return (
@@ -134,10 +135,12 @@ function RootComponent() {
       <I18nextProvider i18n={i18n}>
         <MotionConfig reducedMotion="user">
           <ComingSoonProvider>
-            <SiteNav />
-            <Outlet />
-            <SiteFooter />
-            <LanguageGate />
+            <AdvisorProvider>
+              <SiteNav />
+              <Outlet />
+              <SiteFooter />
+              <LanguageGate />
+            </AdvisorProvider>
           </ComingSoonProvider>
         </MotionConfig>
       </I18nextProvider>

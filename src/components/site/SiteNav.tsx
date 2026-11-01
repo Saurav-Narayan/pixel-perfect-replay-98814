@@ -11,6 +11,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useComingSoon } from "./ComingSoon";
+import { useAdvisor } from "@/components/home/AdvisorProvider";
 
 const learn = [
   { to: "/crops", key: "nav.crops" },
@@ -23,6 +24,7 @@ const linkCls = "text-sm text-muted-foreground transition-colors hover:text-fore
 export function SiteNav() {
   const { t } = useTranslation();
   const openSoon = useComingSoon();
+  const { openAdvisor } = useAdvisor();
   return (
     <header className="fixed inset-x-0 top-3 z-50 px-3 sm:top-5">
       <nav className="glass mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-full py-2 pl-2 pr-2 sm:pr-3">
@@ -51,7 +53,7 @@ export function SiteNav() {
 
         <div className="flex shrink-0 items-center gap-2">
           <div className="hidden sm:block"><LanguageSwitcher /></div>
-          <Button variant="pill" className="hidden h-9 px-4 lg:inline-flex" onClick={openSoon}>
+          <Button variant="pill" className="hidden h-9 px-4 lg:inline-flex" onClick={() => openAdvisor("ask")}>
             {t("nav.ask")}
           </Button>
           <Sheet>
@@ -71,7 +73,7 @@ export function SiteNav() {
               <a href="/#how" className="rounded-xl px-2 py-3 text-lg hover:bg-accent">{t("nav.how")}</a>
               <div className="mt-4 flex flex-col gap-3">
                 <LanguageSwitcher />
-                <Button variant="pill" size="xl" onClick={openSoon}>{t("nav.ask")}</Button>
+                <Button variant="pill" size="xl" onClick={() => openAdvisor("ask")}>{t("nav.ask")}</Button>
               </div>
             </SheetContent>
           </Sheet>
