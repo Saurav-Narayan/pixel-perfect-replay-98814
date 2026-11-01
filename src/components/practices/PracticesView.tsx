@@ -22,29 +22,38 @@ import { Badge } from "@/components/ui/badge";
 import { practices, type Practice } from "@/data/practices";
 import { Reveal } from "@/components/site/Reveal";
 import { useAdvisor } from "@/components/home/AdvisorProvider";
+import { useLoc } from "@/i18n/localize";
+
+const CATEGORIES = [
+  { value: "all", key: "all" },
+  { value: "community", key: "coop" },
+  { value: "soil-water", key: "soil" },
+  { value: "natural", key: "natural" },
+  { value: "livestock", key: "livestock" },
+] as const;
+
+const REGIONS = [
+  { value: "all", key: "all" },
+  { value: "india", key: "india" },
+  { value: "nordic", key: "nordic" },
+  { value: "other", key: "other" },
+] as const;
+
+const categoryKey = (c: string) => CATEGORIES.find((x) => x.value === c)?.key ?? "all";
 
 export function PracticesView() {
   const { t } = useTranslation();
+  const { L, LL } = useLoc();
   const { openAdvisor } = useAdvisor();
-  const [filter, setFilter] = useState<string>("All");
-  const [region, setRegion] = useState<string>("All");
+  const [filter, setFilter] = useState<string>("all");
+  const [region, setRegion] = useState<string>("all");
   const [selectedPractice, setSelectedPractice] = useState<Practice | null>(null);
 
   const filteredPractices = practices.filter(p => {
-    const matchesFilter = filter === "All" || p.category === filter;
-    const matchesRegion = region === "All" || p.regions.includes(region as any);
+    const matchesFilter = filter === "all" || p.category === filter;
+    const matchesRegion = region === "all" || p.regions.includes(region as any);
     return matchesFilter && matchesRegion;
   });
-
-  const categories = [
-    "All",
-    "Community and cooperative models",
-    "Soil and water",
-    "Natural farming",
-    "Livestock practices"
-  ];
-
-  const regions = ["All", "India", "Nordic", "Other"];
 
   const renderDetail = (p: Practice) => (
     <motion.div 
@@ -63,14 +72,14 @@ export function PracticesView() {
 
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="bg-lime/10 text-lime-700 border-lime/20">{p.category}</Badge>
+          <Badge variant="outline" className="bg-lime/10 text-lime-700 border-lime/20">{t(`practices.filters.${categoryKey(p.category)}`)}</Badge>
           {p.regions.map(r => (
             <Badge key={r} variant="outline" className="flex items-center gap-1">
-              <Globe className="h-3 w-3" /> {r}
+              <Globe className="h-3 w-3" /> {t(`practices.regions.${r}`)}
             </Badge>
           ))}
         </div>
-        <h2 className="text-4xl font-bold tracking-tight">{p.title}</h2>
+        <h2 className="text-4xl font-bold tracking-tight">{L(p.title)}</h2>
         <p className="text-sm text-muted-foreground italic">"{t("advisor.disclaimer.practice")}"</p>
       </div>
 
@@ -80,18 +89,18 @@ export function PracticesView() {
             <h3 className="text-xl font-bold flex items-center gap-2">
               <Info className="h-5 w-5 text-primary" /> {t("practices.details.what")}
             </h3>
-            <p className="text-lg leading-relaxed text-muted-foreground">{p.summary}</p>
+            <p className="text-lg leading-relaxed text-muted-foreground">{L(p.summary)}</p>
           </section>
 
           <section className="space-y-3">
             <h3 className="text-xl font-bold flex items-center gap-2">
               <Globe className="h-5 w-5 text-primary" /> {t("practices.details.where")}
             </h3>
-            <p className="text-muted-foreground">{p.whereUsed}</p>
+            <p className="text-muted-foreground">{L(p.whereUsed)}</p>
             {p.indianExample && (
               <div className="mt-4 rounded-2xl bg-lime/5 border border-lime/10 p-4">
-                <p className="text-sm font-bold text-lime-700 uppercase tracking-wider mb-1">Indian Example</p>
-                <p className="text-lime-900">{p.indianExample}</p>
+                <p className="text-sm font-bold text-lime-700 uppercase tracking-wider mb-1">{t("practices.details.indianExample")}</p>
+                <p className="text-lime-900">{L(p.indianExample)}</p>
               </div>
             )}
           </section>
@@ -101,7 +110,7 @@ export function PracticesView() {
               <Leaf className="h-5 w-5 text-primary" /> {t("practices.details.helps")}
             </h3>
             <ul className="grid gap-3 sm:grid-cols-2">
-              {p.benefits.map((b, i) => (
+              {LL(p.benefits).map((b, i) => (
                 <li key={i} className="flex items-start gap-2 text-muted-foreground">
                   <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-lime" />
                   {b}
@@ -115,7 +124,7 @@ export function PracticesView() {
               <AlertTriangle className="h-5 w-5 text-orange-500" /> {t("practices.details.limits")}
             </h3>
             <ul className="space-y-2">
-              {p.limits.map((l, i) => (
+              {LL(p.limits).map((l, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                   <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-orange-400" />
                   {l}
@@ -132,20 +141,20 @@ export function PracticesView() {
             </h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between border-b pb-2">
-                <span className="text-muted-foreground">Land</span>
-                <span className="font-bold">{p.requirements.land}</span>
+                <span className="text-muted-foreground">{t("practices.details.land")}</span>
+                <span className="font-bold">{L(p.requirements.land)}</span>
               </div>
               <div className="flex justify-between border-b pb-2">
-                <span className="text-muted-foreground">Money</span>
-                <span className="font-bold">{p.requirements.money}</span>
+                <span className="text-muted-foreground">{t("practices.details.money")}</span>
+                <span className="font-bold">{L(p.requirements.money)}</span>
               </div>
               <div className="flex justify-between border-b pb-2">
-                <span className="text-muted-foreground">Group Size</span>
-                <span className="font-bold">{p.requirements.groupSize}</span>
+                <span className="text-muted-foreground">{t("practices.details.groupSize")}</span>
+                <span className="font-bold">{L(p.requirements.groupSize)}</span>
               </div>
               <div className="flex justify-between border-b pb-2">
-                <span className="text-muted-foreground">Time</span>
-                <span className="font-bold">{p.requirements.time}</span>
+                <span className="text-muted-foreground">{t("practices.details.time")}</span>
+                <span className="font-bold">{L(p.requirements.time)}</span>
               </div>
             </div>
           </Card>
@@ -159,7 +168,7 @@ export function PracticesView() {
             </div>
           </div>
 
-          <Button variant="pill" size="xl" className="w-full gap-2" onClick={() => openAdvisor("ask", { practice: p.title })}>
+          <Button variant="pill" size="xl" className="w-full gap-2" onClick={() => openAdvisor("ask", { practice: L(p.title) })}>
             <MessagesSquare className="h-5 w-5" /> {t("practices.details.discuss")}
           </Button>
         </aside>
@@ -182,30 +191,30 @@ export function PracticesView() {
 
           <div className="flex flex-col gap-6">
             <Reveal delay={0.2} className="flex flex-wrap items-center justify-center gap-2">
-              {categories.map(c => (
+              {CATEGORIES.map(c => (
                 <button
-                  key={c}
-                  onClick={() => setFilter(c)}
+                  key={c.value}
+                  onClick={() => setFilter(c.value)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    filter === c ? "bg-primary text-white" : "glass hover:bg-accent"
+                    filter === c.value ? "bg-primary text-white" : "glass hover:bg-accent"
                   }`}
                 >
-                  {c === "All" ? t("practices.filters.all") : t(`practices.filters.${(c.split(' ')[0] || "").toLowerCase()}` as any)}
+                  {t(`practices.filters.${c.key}`)}
                 </button>
               ))}
             </Reveal>
 
             <Reveal delay={0.3} className="flex items-center justify-center gap-4 text-sm font-medium">
               <span className="text-muted-foreground flex items-center gap-2">
-                <Globe className="h-4 w-4" /> Region:
+                <Globe className="h-4 w-4" /> {t("practices.regionLabel")}:
               </span>
-              {regions.map(r => (
+              {REGIONS.map(r => (
                 <button
-                  key={r}
-                  onClick={() => setRegion(r)}
-                  className={`transition-colors ${region === r ? "text-primary font-bold underline underline-offset-4" : "text-muted-foreground hover:text-primary"}`}
+                  key={r.value}
+                  onClick={() => setRegion(r.value)}
+                  className={`transition-colors ${region === r.value ? "text-primary font-bold underline underline-offset-4" : "text-muted-foreground hover:text-primary"}`}
                 >
-                  {r === "All" ? t("practices.regions.all") : t(`practices.regions.${r.toLowerCase()}` as any)}
+                  {t(`practices.regions.${r.key}`)}
                 </button>
               ))}
             </Reveal>
@@ -221,18 +230,18 @@ export function PracticesView() {
                   <div className="flex flex-col h-full justify-between gap-6">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <Badge variant="secondary" className="bg-accent text-lime-700 text-[10px] uppercase tracking-widest">{p.category}</Badge>
+                        <Badge variant="secondary" className="bg-accent text-lime-700 text-[10px] uppercase tracking-widest">{t(`practices.filters.${categoryKey(p.category)}`)}</Badge>
                         <div className="flex gap-1">
                           {p.regions.map(r => (
-                            <div key={r} className="h-2 w-2 rounded-full bg-lime" title={r} />
+                            <div key={r} className="h-2 w-2 rounded-full bg-lime" title={t(`practices.regions.${r}`)} />
                           ))}
                         </div>
                       </div>
-                      <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">{p.title}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-3">{p.summary}</p>
+                      <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">{L(p.title)}</h3>
+                      <p className="text-sm text-muted-foreground line-clamp-3">{L(p.summary)}</p>
                     </div>
                     <div className="flex items-center justify-between pt-4 border-t border-glass-border">
-                      <span className="text-xs font-bold text-primary uppercase tracking-widest">Learn more</span>
+                      <span className="text-xs font-bold text-primary uppercase tracking-widest">{t("practices.learnMore")}</span>
                       <ChevronRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
                     </div>
                   </div>

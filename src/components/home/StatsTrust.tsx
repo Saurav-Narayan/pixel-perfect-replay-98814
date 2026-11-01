@@ -11,7 +11,7 @@ export function StatsTrust() {
     { v: schemes.length.toString(), l: t("stats.schemes") },
     { v: "20+", l: t("stats.answers") },
   ];
-  const trust = [t("trust.free"), "Verified sources", "KVK confirmed", "Expert advice"];
+  const trust = [t("trust.free"), t("statsTrust.verified"), t("statsTrust.kvk"), t("statsTrust.expert")];
   return (
     <>
       <section className="px-4 pb-12">

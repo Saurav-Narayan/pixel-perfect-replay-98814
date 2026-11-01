@@ -20,7 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { schemes, type Scheme } from "@/data/schemes";
+import { schemes, type Scheme, type SchemeNeed } from "@/data/schemes";
+import { useLoc } from "@/i18n/localize";
 
 interface SchemeMatcherProps {
   open: boolean;
@@ -31,8 +32,17 @@ type Step = "state" | "land" | "mainCrop" | "need" | "symptoms" | "results";
 
 const STEPS: Step[] = ["state", "land", "mainCrop", "need", "symptoms", "results"];
 
+const STATES = [
+  { value: "Maharashtra", key: "mh" },
+  { value: "West Bengal", key: "wb" },
+  { value: "Bihar", key: "br" },
+  { value: "Uttar Pradesh", key: "up" },
+  { value: "Other", key: "other" },
+] as const;
+
 export function SchemeMatcher({ open, onOpenChange }: SchemeMatcherProps) {
   const { t } = useTranslation();
+  const { L } = useLoc();
   const [currentStep, setCurrentStep] = useState<Step>("state");
   const [formData, setFormData] = useState({
     state: "",
@@ -80,7 +90,7 @@ export function SchemeMatcher({ open, onOpenChange }: SchemeMatcherProps) {
     const landSize = parseFloat(formData.land) || 0;
     return schemes.filter(scheme => {
       const stateMatch = scheme.states.includes("All") || scheme.states.includes(formData.state);
-      const needMatch = scheme.needs.includes(formData.need);
+      const needMatch = scheme.needs.includes(formData.need as SchemeNeed);
       const landMatch = (!scheme.minLand || landSize >= scheme.minLand) && (!scheme.maxLand || landSize <= scheme.maxLand);
       return stateMatch && needMatch && landMatch;
     });
@@ -89,8 +99,6 @@ export function SchemeMatcher({ open, onOpenChange }: SchemeMatcherProps) {
   const renderStep = () => {
     switch (currentStep) {
       case "state":
-        const states = ["Maharashtra", "West Bengal", "Bihar", "Uttar Pradesh", "Other"];
-        const stateKeys = ["mh", "wb", "br", "up", "other"];
         return (
           <div className="space-y-6">
             <div className="flex flex-col items-center gap-4 text-center">
@@ -100,15 +108,15 @@ export function SchemeMatcher({ open, onOpenChange }: SchemeMatcherProps) {
               <DialogTitle className="text-2xl font-semibold">{t("advisor.scheme.state.q")}</DialogTitle>
             </div>
             <div className="grid gap-3">
-              {states.map((s, i) => (
+              {STATES.map((s) => (
                 <button
-                  key={s}
-                  onClick={() => { setFormData(prev => ({ ...prev, state: s })); handleNext(); }}
+                  key={s.value}
+                  onClick={() => { setFormData(prev => ({ ...prev, state: s.value })); handleNext(); }}
                   className={`flex items-center gap-4 rounded-2xl border p-5 transition-all ${
-                    formData.state === s ? "border-primary bg-primary/10 text-primary" : "border-glass-border bg-white/50 hover:border-primary/50"
+                    formData.state === s.value ? "border-primary bg-primary/10 text-primary" : "border-glass-border bg-white/50 hover:border-primary/50"
                   }`}
                 >
-                  <span className="text-lg font-medium">{t(`advisor.scheme.state.${stateKeys[i]}`)}</span>
+                  <span className="text-lg font-medium">{t(`advisor.scheme.state.${s.key}`)}</span>
                   <ChevronRight className="ml-auto h-5 w-5 opacity-50" />
                 </button>
               ))}
@@ -221,18 +229,12 @@ export function SchemeMatcher({ open, onOpenChange }: SchemeMatcherProps) {
               <Card className="p-4 border-orange-200 bg-orange-50">
                 <h3 className="font-bold text-orange-900 mb-2">{t("advisor.scheme.tips")}</h3>
                 <ul className="space-y-2">
-                  <li className="text-sm text-orange-800 flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
-                    Separate infected plants immediately to prevent spread.
-                  </li>
-                  <li className="text-sm text-orange-800 flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
-                    Ensure proper drainage and avoid waterlogging around roots.
-                  </li>
-                  <li className="text-sm text-orange-800 flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
-                    Take a clear photo and visit your nearest Krishi Vigyan Kendra (KVK).
-                  </li>
+                  {(t("advisor.scheme.tipsItems", { returnObjects: true }) as unknown as string[]).map((tip, i) => (
+                    <li key={i} className="text-sm text-orange-800 flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
+                      {tip}
+                    </li>
+                  ))}
                 </ul>
               </Card>
             )}
@@ -242,12 +244,14 @@ export function SchemeMatcher({ open, onOpenChange }: SchemeMatcherProps) {
               {matched.length > 0 ? (
                 matched.map((scheme) => (
                   <Card key={scheme.id} className="p-4 glass border-primary/20">
-                    <h4 className="font-bold text-primary">{scheme.name}</h4>
-                    <p className="text-sm mt-1">{scheme.benefit}</p>
+                    <h4 className="font-bold text-primary">{L(scheme.name)}</h4>
+                    <p className="text-sm mt-1">{L(scheme.benefit)}</p>
                     <div className="mt-3 space-y-2">
-                      <p className="text-xs text-muted-foreground"><span className="font-bold">How to apply:</span> {scheme.howToApply}</p>
+                      <p className="text-xs text-muted-foreground">
+                        <span className="font-bold">{t("schemesView.howToApply")}:</span> {L(scheme.howToApply)}
+                      </p>
                       <a href={scheme.officialUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-lime-600 font-bold hover:underline">
-                        Official Website <ExternalLink className="h-3 w-3" />
+                        {t("advisor.scheme.official")} <ExternalLink className="h-3 w-3" />
                       </a>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">
@@ -261,18 +265,14 @@ export function SchemeMatcher({ open, onOpenChange }: SchemeMatcherProps) {
                   </Card>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">No specific schemes found for your current criteria. Please check with your local agricultural office.</p>
+                <p className="text-sm text-muted-foreground">{t("advisor.scheme.noSchemes")}</p>
               )}
             </div>
 
             <Card className="p-4 border-primary/20 bg-primary/5">
               <h3 className="font-bold text-primary mb-3">{t("advisor.scheme.steps")}</h3>
               <div className="space-y-3">
-                {[
-                  "Collect your Aadhaar card and Land records (7/12 or Jamabandi).",
-                  "Visit the official portal links provided above.",
-                  "Or, visit your nearest Common Service Centre (CSC) for assistance."
-                ].map((step, i) => (
+                {(t("advisor.scheme.stepsItems", { returnObjects: true }) as unknown as string[]).map((step, i) => (
                   <div key={i} className="flex gap-3">
                     <div className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary text-white text-xs font-bold">
                       {i + 1}
@@ -285,7 +285,8 @@ export function SchemeMatcher({ open, onOpenChange }: SchemeMatcherProps) {
 
             <div className="grid grid-cols-2 gap-3 pt-4">
               <Button variant="outline" className="rounded-2xl gap-2" onClick={() => {
-                const text = `Krishi Setu Scheme Matcher results for ${formData.state}:\n${matched.map(s => `- ${s.name}`).join('\n')}`;
+                const stateKey = STATES.find((s) => s.value === formData.state)?.key ?? "other";
+                const text = `${t("advisor.shareTitle.scheme", { place: t(`advisor.scheme.state.${stateKey}`) })}\n${matched.map(s => `- ${L(s.name)}`).join('\n')}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
               }}>
                 <Share2 className="h-4 w-4" /> {t("advisor.share")}
@@ -310,7 +311,7 @@ export function SchemeMatcher({ open, onOpenChange }: SchemeMatcherProps) {
           ) : <div />}
           {currentStep !== "results" && (
             <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-              Step {stepIndex + 1} of {STEPS.length - 1}
+              {t("advisor.step", { current: stepIndex + 1, total: STEPS.length - 1 })}
             </div>
           )}
         </div>

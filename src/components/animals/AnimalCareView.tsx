@@ -8,32 +8,22 @@ import { Badge } from "@/components/ui/badge";
 import { animals, type AnimalGuidance } from "@/data/animals";
 import { Reveal } from "@/components/site/Reveal";
 import { useAdvisor } from "@/components/home/AdvisorProvider";
+import { useLoc } from "@/i18n/localize";
 
 const animalGroups = [
-  { value: "Dairy cattle and buffalo", key: "dairy" },
-  { value: "Poultry", key: "poultry" },
-  { value: "Goats", key: "goats" },
+  { value: "dairy", key: "dairy" },
+  { value: "poultry", key: "poultry" },
+  { value: "goats", key: "goats" },
 ] as const;
-
-const topicKeys: Record<AnimalGuidance["topic"], string> = {
-  "Health problem": "health",
-  "Breeding and delivery": "breeding",
-  Feeding: "feeding",
-  "Housing and care": "housing",
-  "Productivity and income": "productivity",
-  "Schemes and subsidies": "schemes",
-};
-
-const animalKey = (animal: AnimalGuidance["animal"]) =>
-  animalGroups.find((g) => g.value === animal)?.key ?? "dairy";
 
 export function AnimalCareView() {
   const { t } = useTranslation();
+  const { L, LL } = useLoc();
   const { openAdvisor } = useAdvisor();
-  const [group, setGroup] = useState<string>("All");
+  const [group, setGroup] = useState<string>("all");
   const [selected, setSelected] = useState<AnimalGuidance | null>(null);
 
-  const filtered = group === "All" ? animals : animals.filter((a) => a.animal === group);
+  const filtered = group === "all" ? animals : animals.filter((a) => a.animal === group);
 
   const renderDetail = (a: AnimalGuidance) => (
     <motion.div
@@ -53,13 +43,13 @@ export function AnimalCareView() {
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2">
           <Badge variant="outline" className="bg-lime/10 text-lime-700 border-lime/20">
-            {t(`animals.${animalKey(a.animal)}`)}
+            {t(`animals.${a.animal}`)}
           </Badge>
           <Badge variant="secondary" className="bg-accent text-lime-700 text-[10px] uppercase tracking-widest">
-            {t(`animals.topics.${topicKeys[a.topic]}`)}
+            {t(`animals.topics.${a.topic}`)}
           </Badge>
         </div>
-        <h2 className="text-4xl font-bold tracking-tight">{a.issue}</h2>
+        <h2 className="text-4xl font-bold tracking-tight">{L(a.issue)}</h2>
         <p className="text-sm text-muted-foreground italic">"{t("advisor.disclaimer.animal")}"</p>
       </div>
 
@@ -70,7 +60,7 @@ export function AnimalCareView() {
               <Stethoscope className="h-5 w-5 text-primary" /> {t("animals.signs")}
             </h3>
             <ul className="grid gap-3 sm:grid-cols-2">
-              {a.signs.map((s, i) => (
+              {LL(a.signs).map((s, i) => (
                 <li key={i} className="flex items-start gap-2 text-muted-foreground">
                   <div className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-lime" />
                   {s}
@@ -84,7 +74,7 @@ export function AnimalCareView() {
               <HeartPulse className="h-5 w-5 text-primary" /> {t("animals.care")}
             </h3>
             <ul className="space-y-3">
-              {a.basicCare.map((c, i) => (
+              {LL(a.basicCare).map((c, i) => (
                 <li key={i} className="flex items-start gap-2 text-muted-foreground">
                   <ShieldCheck className="h-4 w-4 mt-0.5 shrink-0 text-lime" />
                   {c}
@@ -98,14 +88,14 @@ export function AnimalCareView() {
               <AlertTriangle className="h-5 w-5 text-orange-500" /> {t("animals.redFlag")}
             </h3>
             <ul className="space-y-2 rounded-2xl bg-orange-500/5 border border-orange-500/10 p-4">
-              {a.redFlags.map((f, i) => (
+              {LL(a.redFlags).map((f, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                   <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-orange-400" />
                   {f}
                 </li>
               ))}
             </ul>
-            <p className="text-sm font-medium text-orange-600">{a.whenToCallVet}</p>
+            <p className="text-sm font-medium text-orange-600">{L(a.whenToCallVet)}</p>
           </section>
         </div>
 
@@ -119,7 +109,7 @@ export function AnimalCareView() {
             </div>
           </div>
 
-          <Button variant="pill" size="xl" className="w-full gap-2" onClick={() => openAdvisor("ask", { animal: a.issue })}>
+          <Button variant="pill" size="xl" className="w-full gap-2" onClick={() => openAdvisor("ask", { animal: L(a.issue) })}>
             <MessagesSquare className="h-5 w-5" /> {t("animals.ask")}
           </Button>
         </aside>
@@ -144,7 +134,7 @@ export function AnimalCareView() {
             <span className="w-full text-center text-sm font-medium text-muted-foreground sm:w-auto sm:text-left">
               {t("animals.select")}
             </span>
-            {[{ value: "All", key: "title" }, ...animalGroups].map((g) => (
+            {[{ value: "all", key: "all" }, ...animalGroups].map((g) => (
               <button
                 key={g.value}
                 onClick={() => setGroup(g.value)}
@@ -152,7 +142,7 @@ export function AnimalCareView() {
                   group === g.value ? "bg-primary text-white" : "glass hover:bg-accent"
                 }`}
               >
-                {g.value === "All" ? t("practices.filters.all") : t(`animals.${g.key}`)}
+                {g.value === "all" ? t("practices.filters.all") : t(`animals.${g.key}`)}
               </button>
             ))}
           </Reveal>
@@ -168,16 +158,16 @@ export function AnimalCareView() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <Badge variant="secondary" className="bg-accent text-lime-700 text-[10px] uppercase tracking-widest">
-                          {t(`animals.topics.${topicKeys[a.topic]}`)}
+                          {t(`animals.topics.${a.topic}`)}
                         </Badge>
                         <PawPrint className="h-4 w-4 text-lime" />
                       </div>
-                      <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">{a.issue}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-3">{a.signs.join(", ")}</p>
+                      <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">{L(a.issue)}</h3>
+                      <p className="text-sm text-muted-foreground line-clamp-3">{LL(a.signs).join(", ")}</p>
                     </div>
                     <div className="flex items-center justify-between pt-4 border-t border-glass-border">
                       <span className="text-xs font-bold text-primary uppercase tracking-widest">
-                        {t(`animals.${animalKey(a.animal)}`)}
+                        {t(`animals.${a.animal}`)}
                       </span>
                       <ChevronRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
                     </div>

@@ -21,7 +21,8 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useWeather } from "@/hooks/use-weather";
-import { crops, type Crop } from "@/data/crops";
+import { crops, type Crop, type CropSoil, type CropSeason, type CropWater } from "@/data/crops";
+import { useLoc } from "@/i18n/localize";
 
 interface CropRecommenderProps {
   open: boolean;
@@ -34,6 +35,7 @@ const STEPS: Step[] = ["location", "soil", "season", "water", "budget", "goal", 
 
 export function CropRecommender({ open, onOpenChange }: CropRecommenderProps) {
   const { t } = useTranslation();
+  const { L } = useLoc();
   const [currentStep, setCurrentStep] = useState<Step>("location");
   const [formData, setFormData] = useState({
     location: "",
@@ -75,9 +77,9 @@ export function CropRecommender({ open, onOpenChange }: CropRecommenderProps) {
     return crops
       .map(crop => {
         let score = 0;
-        if (crop.soils.includes(formData.soil) || formData.soil === "unsure") score += 2;
-        if (crop.seasons.includes(formData.season)) score += 3;
-        if (crop.waterNeeds.includes(formData.water)) score += 2;
+        if (crop.soils.includes(formData.soil as CropSoil) || formData.soil === "unsure") score += 2;
+        if (crop.seasons.includes(formData.season as CropSeason)) score += 3;
+        if (crop.waterNeeds.includes(formData.water as CropWater)) score += 2;
         if (crop.costBand === formData.budget) score += 1;
         formData.goal.forEach(g => {
           if (crop.goal.includes(g as any)) score += 1;
@@ -228,7 +230,11 @@ export function CropRecommender({ open, onOpenChange }: CropRecommenderProps) {
           </div>
         );
       case "goal":
-        const goals = ["food", "cash", "risk"];
+        const goals = [
+          { value: "food", key: "food" },
+          { value: "cash", key: "cash" },
+          { value: "low-risk", key: "risk" },
+        ] as const;
         return (
           <div className="space-y-6">
             <div className="flex flex-col items-center gap-4 text-center">
@@ -237,21 +243,21 @@ export function CropRecommender({ open, onOpenChange }: CropRecommenderProps) {
             <div className="grid gap-3">
               {goals.map((g) => (
                 <button
-                  key={g}
+                  key={g.value}
                   onClick={() => {
-                    const newGoals = formData.goal.includes(g) 
-                      ? formData.goal.filter(x => x !== g)
-                      : [...formData.goal, g];
+                    const newGoals = formData.goal.includes(g.value)
+                      ? formData.goal.filter(x => x !== g.value)
+                      : [...formData.goal, g.value];
                     setFormData(prev => ({ ...prev, goal: newGoals }));
                   }}
                   className={`flex items-center gap-4 rounded-2xl border p-5 transition-all ${
-                    formData.goal.includes(g) ? "border-primary bg-primary/10 text-primary" : "border-glass-border bg-white/50 hover:border-primary/50"
+                    formData.goal.includes(g.value) ? "border-primary bg-primary/10 text-primary" : "border-glass-border bg-white/50 hover:border-primary/50"
                   }`}
                 >
-                  <Target className={`h-6 w-6 ${formData.goal.includes(g) ? "text-primary" : "text-muted-foreground"}`} />
-                  <span className="text-lg font-medium">{t(`advisor.crop.goal.${g}`)}</span>
-                  <div className={`ml-auto h-6 w-6 rounded-full border flex items-center justify-center ${formData.goal.includes(g) ? "bg-primary border-primary" : "border-muted-foreground"}`}>
-                    {formData.goal.includes(g) && <div className="h-2 w-2 rounded-full bg-white" />}
+                  <Target className={`h-6 w-6 ${formData.goal.includes(g.value) ? "text-primary" : "text-muted-foreground"}`} />
+                  <span className="text-lg font-medium">{t(`advisor.crop.goal.${g.key}`)}</span>
+                  <div className={`ml-auto h-6 w-6 rounded-full border flex items-center justify-center ${formData.goal.includes(g.value) ? "bg-primary border-primary" : "border-muted-foreground"}`}>
+                    {formData.goal.includes(g.value) && <div className="h-2 w-2 rounded-full bg-white" />}
                   </div>
                 </button>
               ))}
@@ -275,11 +281,11 @@ export function CropRecommender({ open, onOpenChange }: CropRecommenderProps) {
                 <Card key={crop.id} className="p-4 glass border-primary/20">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-xl font-bold text-primary">{crop.name}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">{crop.reason}</p>
+                      <h3 className="text-xl font-bold text-primary">{L(crop.name)}</h3>
+                      <p className="mt-1 text-sm text-muted-foreground">{L(crop.reason)}</p>
                     </div>
                     <div className="text-xs font-bold bg-lime/20 text-lime-600 px-2 py-1 rounded-full uppercase">
-                      Match: {Math.min(100, Math.round((score / 10) * 100))}%
+                      {t("advisor.match", { n: Math.min(100, Math.round((score / 10) * 100)) })}
                     </div>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">
@@ -326,7 +332,7 @@ export function CropRecommender({ open, onOpenChange }: CropRecommenderProps) {
                     
                     <div className="pt-2 border-t border-blue-200">
                       <p className="text-sm font-medium text-blue-800">
-                        {weather.current.rainChance > 40 ? "⚠️ High chance of rain. Avoid sowing or applying fertilizer today." : "✅ Weather looks good for field work."}
+                        {weather.current.rainChance > 40 ? t("advisor.crop.weather.tipRain") : t("advisor.crop.weather.tipGood")}
                       </p>
                     </div>
 
@@ -346,7 +352,7 @@ export function CropRecommender({ open, onOpenChange }: CropRecommenderProps) {
 
             <div className="grid grid-cols-2 gap-3 pt-4">
               <Button variant="outline" className="rounded-2xl gap-2" onClick={() => {
-                const text = `Krishi Setu Recommendations for ${formData.location}:\n${recommendations.map(r => `- ${r.crop.name}`).join('\n')}`;
+                const text = `${t("advisor.shareTitle.crop", { place: formData.location })}\n${recommendations.map(r => `- ${L(r.crop.name)}`).join('\n')}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
               }}>
                 <Share2 className="h-4 w-4" /> {t("advisor.share")}
@@ -371,7 +377,7 @@ export function CropRecommender({ open, onOpenChange }: CropRecommenderProps) {
           ) : <div />}
           {currentStep !== "results" && (
             <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-              Step {stepIndex + 1} of {STEPS.length - 1}
+              {t("advisor.step", { current: stepIndex + 1, total: STEPS.length - 1 })}
             </div>
           )}
         </div>

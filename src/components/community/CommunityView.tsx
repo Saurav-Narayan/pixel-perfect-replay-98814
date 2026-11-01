@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, 
-  Filter, 
   MessageSquare, 
   ThumbsUp, 
   Flag, 
@@ -13,7 +12,8 @@ import {
   AlertTriangle,
   Clock,
   User,
-  MapPin
+  MapPin,
+  SearchX
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -57,13 +57,15 @@ interface Answer {
   likes_count: number;
 }
 
+const FILTERS = ["all", "crop", "livestock", "practice", "scheme"] as const;
+
 export function CommunityView() {
   const { t } = useTranslation();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState<string>("all");
   const [askOpen, setAskOpen] = useState(false);
   const [answerText, setAnswerText] = useState("");
   const [postingAnswer, setPostingAnswer] = useState(false);
@@ -71,6 +73,11 @@ export function CommunityView() {
   useEffect(() => {
     fetchQuestions();
   }, [filter]);
+
+  const categoryLabel = (value: string) =>
+    (FILTERS as readonly string[]).includes(value) && value !== "all"
+      ? t(`community.filters.${value}`)
+      : value;
 
   const fetchQuestions = async () => {
     setLoading(true);
@@ -83,8 +90,8 @@ export function CommunityView() {
         `)
         .order("created_at", { ascending: false });
 
-      if (filter !== "All") {
-        query = query.eq("category", filter.toLowerCase());
+      if (filter !== "all") {
+        query = query.eq("category", filter);
       }
 
       const { data, error } = await query;
@@ -92,8 +99,7 @@ export function CommunityView() {
       setQuestions(data || []);
     } catch (err) {
       console.error("Failed to fetch questions", err);
-      // Fallback to sample data if supabase fails
-      setQuestions(SAMPLE_QUESTIONS);
+      setQuestions([]);
     } finally {
       setLoading(false);
     }
@@ -112,23 +118,23 @@ export function CommunityView() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      
+
       const formatted = (data || []).map(ans => ({
         ...ans,
         likes_count: ans.likes.length
       })).sort((a, b) => b.likes_count - a.likes_count);
-      
+
       setAnswers(formatted);
     } catch (err) {
       console.error("Failed to fetch answers", err);
-      setAnswers(SAMPLE_ANSWERS.filter(a => a.question_id === questionId));
+      setAnswers([]);
     }
   };
 
   const handleLike = async (answerId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast.error("Please login to like answers");
+      toast.error(t("community.loginLike"));
       return;
     }
 
@@ -153,7 +159,7 @@ export function CommunityView() {
   const handlePostAnswer = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast.error("Please login to answer");
+      toast.error(t("community.loginAnswer"));
       return;
     }
 
@@ -167,7 +173,7 @@ export function CommunityView() {
       if (error) throw error;
       setAnswerText("");
       fetchAnswers(selectedQuestion!.id);
-      toast.success("Answer posted!");
+      toast.success(t("community.posted"));
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -180,10 +186,10 @@ export function CommunityView() {
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Search questions..." className="pl-10 h-12 rounded-2xl" />
+          <Input placeholder={t("community.search")} className="pl-10 h-12 rounded-2xl" />
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
-          {["All", "Crop", "Livestock", "Practice", "Scheme"].map(c => (
+          {FILTERS.map((c) => (
             <button
               key={c}
               onClick={() => setFilter(c)}
@@ -191,53 +197,61 @@ export function CommunityView() {
                 filter === c ? "bg-primary text-white" : "glass hover:bg-accent"
               }`}
             >
-              {c}
+              {t(`community.filters.${c}`)}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="grid gap-4">
-        {questions.map((q, i) => (
-          <Reveal key={q.id} delay={i * 0.05}>
-            <Card 
-              className="glass group cursor-pointer p-5 transition-all hover:border-primary/20"
-              onClick={() => { setSelectedQuestion(q); fetchAnswers(q.id); }}
-            >
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="bg-lime/10 text-lime-700 border-lime/20 text-[10px] uppercase">
-                      {q.category}
-                    </Badge>
-                    {q.state && (
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin className="h-3 w-3" /> {q.state}
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Clock className="h-3 w-3" /> {new Date(q.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold leading-tight group-hover:text-primary transition-colors">{q.text}</h3>
-                <div className="flex items-center justify-between pt-2 border-t border-glass-border">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <div className="h-6 w-6 rounded-full bg-accent flex items-center justify-center">
-                      <User className="h-3 w-3" />
+      {!loading && questions.length === 0 ? (
+        <Card className="glass flex flex-col items-center gap-3 p-12 text-center">
+          <SearchX className="h-8 w-8 text-muted-foreground" />
+          <p className="text-lg font-bold">{t("community.empty")}</p>
+          <p className="text-sm text-muted-foreground">{t("community.emptySub")}</p>
+        </Card>
+      ) : (
+        <div className="grid gap-4">
+          {questions.map((q, i) => (
+            <Reveal key={q.id} delay={i * 0.05}>
+              <Card 
+                className="glass group cursor-pointer p-5 transition-all hover:border-primary/20"
+                onClick={() => { setSelectedQuestion(q); fetchAnswers(q.id); }}
+              >
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="bg-lime/10 text-lime-700 border-lime/20 text-[10px] uppercase">
+                        {categoryLabel(q.category)}
+                      </Badge>
+                      {q.state && (
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <MapPin className="h-3 w-3" /> {q.state}
+                        </span>
+                      )}
                     </div>
-                    {q.profiles.display_name}
-                    {q.profiles.role === "expert" && <BadgeCheck className="h-4 w-4 text-primary" />}
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-3 w-3" /> {new Date(q.created_at).toLocaleDateString()}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1 text-xs font-bold text-primary uppercase tracking-widest">
-                    <MessageSquare className="h-4 w-4" /> {q.answers_count || 0} Answers
+                  <h3 className="text-lg font-bold leading-tight group-hover:text-primary transition-colors">{q.text}</h3>
+                  <div className="flex items-center justify-between pt-2 border-t border-glass-border">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="h-6 w-6 rounded-full bg-accent flex items-center justify-center">
+                        <User className="h-3 w-3" />
+                      </div>
+                      {q.profiles.display_name}
+                      {q.profiles.role === "expert" && <BadgeCheck className="h-4 w-4 text-primary" />}
+                    </div>
+                    <div className="flex items-center gap-1 text-xs font-bold text-primary uppercase tracking-widest">
+                      <MessageSquare className="h-4 w-4" /> {q.answers_count || 0} {t("community.answers")}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          </Reveal>
-        ))}
-      </div>
+              </Card>
+            </Reveal>
+          ))}
+        </div>
+      )}
     </div>
   );
 
@@ -247,13 +261,13 @@ export function CommunityView() {
         onClick={() => setSelectedQuestion(null)}
         className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to community
+        <ArrowLeft className="h-4 w-4" /> {t("community.back")}
       </button>
 
       <div className="space-y-6">
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Badge className="bg-primary">{selectedQuestion?.category}</Badge>
+            <Badge className="bg-primary">{categoryLabel(selectedQuestion?.category || "")}</Badge>
             <span className="text-sm text-muted-foreground">{new Date(selectedQuestion?.created_at || "").toLocaleDateString()}</span>
           </div>
           <h2 className="text-2xl font-bold sm:text-4xl">{selectedQuestion?.text}</h2>
@@ -271,13 +285,13 @@ export function CommunityView() {
         {selectedQuestion?.category === "livestock" && (
           <Card className="p-4 border-red-200 bg-red-50 text-red-900 flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
-            <p className="text-sm font-bold">For emergencies, contact a veterinarian immediately.</p>
+            <p className="text-sm font-bold">{t("community.emergency")}</p>
           </Card>
         )}
 
         <div className="space-y-4 pt-8">
           <h3 className="text-xl font-bold flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" /> Answers ({answers.length})
+            <MessageSquare className="h-5 w-5" /> {t("community.answers")} ({answers.length})
           </h3>
           
           <div className="grid gap-6">
@@ -293,7 +307,7 @@ export function CommunityView() {
                         {ans.profiles.display_name}
                         {ans.profiles.role === "expert" && (
                           <Badge className="h-5 gap-1 bg-primary px-2 text-[10px]">
-                            <BadgeCheck className="h-3 w-3" /> Expert
+                            <BadgeCheck className="h-3 w-3" /> {t("community.expert")}
                           </Badge>
                         )}
                       </div>
@@ -301,7 +315,7 @@ export function CommunityView() {
                     </div>
                   </div>
                   <div className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-lg">
-                    Score: {ans.likes_count * 10}
+                    {t("community.score")}: {ans.likes_count * 10}
                   </div>
                 </div>
                 
@@ -315,7 +329,7 @@ export function CommunityView() {
                     <ThumbsUp className="h-4 w-4" /> {ans.likes_count}
                   </button>
                   <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-red-500 transition-colors">
-                    <Flag className="h-4 w-4" /> Report
+                    <Flag className="h-4 w-4" /> {t("community.report")}
                   </button>
                 </div>
               </Card>
@@ -323,16 +337,16 @@ export function CommunityView() {
           </div>
 
           <div className="space-y-4 pt-8">
-            <h3 className="text-lg font-bold">Your Answer</h3>
+            <h3 className="text-lg font-bold">{t("community.yourAnswer")}</h3>
             <Textarea 
-              placeholder="Write your answer here..."
+              placeholder={t("community.answerPlaceholder")}
               className="min-h-[120px] rounded-2xl bg-white/50"
               value={answerText}
               onChange={(e) => setAnswerText(e.target.value)}
               maxLength={1000}
             />
             <Button variant="pill" size="xl" className="w-full" onClick={handlePostAnswer} disabled={postingAnswer}>
-              {postingAnswer ? "Posting..." : "Post Answer"}
+              {postingAnswer ? t("community.posting") : t("community.postAnswer")}
             </Button>
           </div>
         </div>
@@ -366,43 +380,3 @@ export function CommunityView() {
     </div>
   );
 }
-
-const SAMPLE_QUESTIONS: Question[] = [
-  {
-    id: "q1",
-    text: "Why are my tomato leaves turning yellow from the bottom?",
-    category: "crop",
-    crop: "Tomato",
-    state: "Maharashtra",
-    language: "en",
-    created_at: new Date().toISOString(),
-    user_id: "u1",
-    profiles: { display_name: "Rahul Patil", role: "farmer" },
-    answers_count: 2
-  },
-  {
-    id: "q2",
-    text: "Best time to vaccinate goats for FMD in Bihar?",
-    category: "livestock",
-    animal: "Goats",
-    state: "Bihar",
-    language: "en",
-    created_at: new Date().toISOString(),
-    user_id: "u2",
-    profiles: { display_name: "Suresh Kumar", role: "farmer" },
-    answers_count: 1
-  }
-];
-
-const SAMPLE_ANSWERS: (Answer & { question_id: string })[] = [
-  {
-    id: "a1",
-    question_id: "q1",
-    text: "This is often due to nitrogen deficiency or overwatering. Check if the soil is too wet. If it's nitrogen, try adding compost or organic fertilizer.",
-    created_at: new Date().toISOString(),
-    user_id: "e1",
-    profiles: { display_name: "Dr. Sharma", role: "expert" },
-    likes: [],
-    likes_count: 5
-  }
-];

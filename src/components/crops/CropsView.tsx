@@ -4,9 +4,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Info, MapPin, Calendar, Droplets } from "lucide-react";
 import { Reveal } from "@/components/site/Reveal";
+import { useLoc } from "@/i18n/localize";
 
 export function CropsView() {
   const { t } = useTranslation();
+  const { L, LL } = useLoc();
   return (
     <div className="mx-auto max-w-6xl space-y-12">
       <div className="text-center space-y-4">
@@ -23,20 +25,22 @@ export function CropsView() {
           <Reveal key={crop.id} delay={i * 0.05}>
             <Card className="glass p-6 space-y-4">
               <div className="flex items-start justify-between">
-                <h3 className="text-xl font-bold text-primary">{crop.name}</h3>
-                <Badge variant="outline" className="bg-lime/10 text-lime-700 border-lime/20 capitalize">{crop.costBand} Cost</Badge>
+                <h3 className="text-xl font-bold text-primary">{L(crop.name)}</h3>
+                <Badge variant="outline" className="bg-lime/10 text-lime-700 border-lime/20 capitalize">
+                  {t(`advisor.crop.budget.${crop.costBand}`)} {t("cropsView.cost")}
+                </Badge>
               </div>
-              <p className="text-sm text-muted-foreground">{crop.reason}</p>
+              <p className="text-sm text-muted-foreground">{L(crop.reason)}</p>
               
               <div className="space-y-2 pt-4 border-t border-glass-border">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <MapPin className="h-3.5 w-3.5" /> {crop.states.join(", ")}
+                  <MapPin className="h-3.5 w-3.5" /> {LL(crop.states).join(", ")}
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Calendar className="h-3.5 w-3.5" /> {crop.seasons.join(", ")}
+                  <Calendar className="h-3.5 w-3.5" /> {crop.seasons.map((s) => t(`advisor.crop.season.${s}`)).join(", ")}
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Droplets className="h-3.5 w-3.5" /> {crop.waterNeeds.join(", ")}
+                  <Droplets className="h-3.5 w-3.5" /> {crop.waterNeeds.map((w) => t(`advisor.crop.water.${w}`)).join(", ")}
                 </div>
               </div>
 

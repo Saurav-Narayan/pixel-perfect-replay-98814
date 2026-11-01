@@ -5,6 +5,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { crops } from "@/data/crops";
 import { animals } from "@/data/animals";
 import { practices } from "@/data/practices";
+import { useLoc } from "@/i18n/localize";
 
 const groups = [
   { key: "crops", to: "/crops", icon: Wheat, data: crops.slice(0, 3) },
@@ -15,6 +16,7 @@ const groups = [
 
 export function Teasers() {
   const { t } = useTranslation();
+  const { L, LL } = useLoc();
   return (
     <section id="learn" className="space-y-20 px-4 py-20 sm:py-24">
       {groups.map(({ key, to, icon: Icon, data }) => (
@@ -37,8 +39,8 @@ export function Teasers() {
                       <Icon className="h-5 w-5 text-lime" />
                     </div>
                     <div className="space-y-2">
-                      <p className="font-bold line-clamp-2">Latest community questions and expert answers...</p>
-                      <p className="text-xs text-muted-foreground">View discussions</p>
+                      <p className="font-bold line-clamp-2">{t("teasers.community.card.text")}</p>
+                      <p className="text-xs text-muted-foreground">{t("teasers.community.card.link")}</p>
                     </div>
                   </Link>
                 </Reveal>
@@ -51,9 +53,9 @@ export function Teasers() {
                       <Icon className="h-5 w-5 text-lime" />
                     </div>
                     <div className="space-y-2">
-                      <p className="font-bold">{'name' in item ? item.name : 'issue' in item ? item.issue : item.title}</p>
+                      <p className="font-bold">{'name' in item ? L(item.name) : 'issue' in item ? L(item.issue) : L(item.title)}</p>
                       <p className="text-xs text-muted-foreground line-clamp-2">
-                        {'reason' in item ? item.reason : 'signs' in item ? item.signs.join(", ") : item.summary}
+                        {'reason' in item ? L(item.reason) : 'signs' in item ? LL(item.signs).join(", ") : L(item.summary)}
                       </p>
                     </div>
                   </Link>
