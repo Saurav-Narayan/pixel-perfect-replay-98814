@@ -1,0 +1,72 @@
+const en = {
+  nav: {
+    learn: "Learn",
+    crops: "Crops",
+    animals: "Animals",
+    practices: "Farming Practices",
+    schemes: "Schemes",
+    community: "Community",
+    how: "How it works",
+    ask: "Ask a Question",
+    language: "Language",
+    menu: "Menu",
+    home: "Home",
+  },
+  gate: { title: "Choose your language", sub: "You can change this any time." },
+  hero: {
+    before: "Grow better with",
+    accent: "trusted",
+    after: "farm help",
+    sub: "Simple advice on crops, animals and government schemes, in your language.",
+    cta: "Check my eligibility, free",
+    crop: "Find the right crop",
+    animals: "Care for my animals",
+    chip1: "4 languages",
+    chip2: "Sources shown on every answer",
+    chip3: "Works on low data",
+  },
+  stats: { languages: "Languages", crops: "Crops covered", schemes: "Schemes listed", answers: "Questions answered" },
+  trust: { free: "Free to use", low: "Works on low data", sources: "Sources shown on every answer", langs: "4 languages" },
+  about: {
+    kicker: "Why this matters",
+    title: "Good farm advice should be easy to find",
+    body: "Many farmers miss out on help because information is scattered, hard to read, or not in their language. Krishi Setu brings it together in one simple place.",
+    cards: [
+      { p: "Advice is hard to find", s: "Everything in one place" },
+      { p: "Too much English", s: "Read in your own language" },
+      { p: "Not sure who to trust", s: "Every answer shows its source" },
+    ],
+  },
+  how: {
+    kicker: "How it works",
+    title: "Four simple steps",
+    steps: [
+      { t: "Tell us about your farm", d: "Your land, crops and animals." },
+      { t: "Get guidance", d: "Clear tips made for you." },
+      { t: "Ask if unsure", d: "Send any question, any time." },
+      { t: "Community answers", d: "Farmers and experts help out." },
+    ],
+  },
+  teasers: {
+    crops: { title: "Popular crops", sub: "What to grow, and when." },
+    animals: { title: "Animal care", sub: "Keep your animals healthy." },
+    practices: { title: "Farming practices", sub: "Better ways to farm." },
+    community: { title: "From the community", sub: "Questions from farmers like you." },
+    soon: "Coming soon",
+    all: "See all",
+  },
+  faq: {
+    title: "Common questions",
+    items: [
+      { q: "Is Krishi Setu free?", a: "Yes. It is free for every farmer." },
+      { q: "Does it work on a slow phone network?", a: "Yes. The pages are light and load fast on low data." },
+      { q: "Which languages can I use?", a: "English, Hindi, Marathi and Bangla. You can switch any time." },
+      { q: "Where does the advice come from?", a: "Every answer shows its source so you can check it." },
+    ],
+  },
+  footer: { tagline: "A bridge between farmers and good knowledge.", rights: "All rights reserved.", explore: "Explore" },
+  soon: { title: "Coming soon", body: "We are still building this. Please check back soon.", close: "Okay" },
+  page: { soon: "Coming soon", body: "This page is on its way.", back: "Back to home" },
+};
+export default en;
+export type Dict = typeof en;
