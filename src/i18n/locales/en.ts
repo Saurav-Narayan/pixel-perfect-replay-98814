@@ -138,6 +138,8 @@ const en = {
     title: "Animal Care",
     sub: "Guidance for your livestock",
     select: "Choose an animal",
+    signs: "Signs to look for",
+    care: "Basic care",
     dairy: "Dairy cattle and buffalo",
     poultry: "Poultry",
     goats: "Goats",
