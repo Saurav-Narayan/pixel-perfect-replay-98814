@@ -21,14 +21,15 @@ import { Badge } from "@/components/ui/badge";
 import { cropDiseases, type CropDisease, type DiseaseType } from "@/data/cropDiseases";
 import { Reveal } from "@/components/site/Reveal";
 import { useAdvisor } from "@/components/home/AdvisorProvider";
+import { useLoc } from "@/i18n/localize";
 
 const typeStyles: Record<DiseaseType, string> = {
-  Fungal: "bg-amber-500/10 text-amber-700 border-amber-500/20",
-  Bacterial: "bg-sky-500/10 text-sky-700 border-sky-500/20",
-  Viral: "bg-rose-500/10 text-rose-700 border-rose-500/20",
-  Pest: "bg-orange-500/10 text-orange-700 border-orange-500/20",
-  Nematode: "bg-purple-500/10 text-purple-700 border-purple-500/20",
-  "Nutrient deficiency": "bg-teal-500/10 text-teal-700 border-teal-500/20",
+  fungal: "bg-amber-500/10 text-amber-700 border-amber-500/20",
+  bacterial: "bg-sky-500/10 text-sky-700 border-sky-500/20",
+  viral: "bg-rose-500/10 text-rose-700 border-rose-500/20",
+  pest: "bg-orange-500/10 text-orange-700 border-orange-500/20",
+  nematode: "bg-purple-500/10 text-purple-700 border-purple-500/20",
+  nutrient: "bg-teal-500/10 text-teal-700 border-teal-500/20",
 };
 
 function Section({
@@ -59,16 +60,20 @@ function Section({
 
 export function CropDiseasesView() {
   const { t } = useTranslation();
+  const { L, LL } = useLoc();
   const { openAdvisor } = useAdvisor();
-  const [crop, setCrop] = useState<string>("All");
+  const [cropId, setCropId] = useState<string>("all");
   const [selected, setSelected] = useState<CropDisease | null>(null);
 
-  const cropNames = useMemo(
-    () => Array.from(new Set(cropDiseases.map((d) => d.crop))),
-    [],
-  );
+  const cropOptions = useMemo(() => {
+    const seen = new Map<string, CropDisease["crop"]>();
+    cropDiseases.forEach((d) => {
+      if (!seen.has(d.cropId)) seen.set(d.cropId, d.crop);
+    });
+    return Array.from(seen, ([id, name]) => ({ id, name }));
+  }, []);
 
-  const filtered = crop === "All" ? cropDiseases : cropDiseases.filter((d) => d.crop === crop);
+  const filtered = cropId === "all" ? cropDiseases : cropDiseases.filter((d) => d.cropId === cropId);
 
   const renderDetail = (d: CropDisease) => (
     <motion.div
@@ -86,44 +91,44 @@ export function CropDiseasesView() {
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2">
           <Badge variant="outline" className={typeStyles[d.type]}>
-            {d.type}
+            {t(`diseases.types.${d.type}`)}
           </Badge>
           <Badge variant="secondary" className="bg-accent text-lime-700 text-[10px] uppercase tracking-widest">
-            {d.crop}
+            {L(d.crop)}
           </Badge>
         </div>
-        <h2 className="text-4xl font-bold tracking-tight">{d.disease}</h2>
+        <h2 className="text-4xl font-bold tracking-tight">{L(d.disease)}</h2>
         <p className="text-sm italic text-muted-foreground">"{t("advisor.disclaimer.crop")}"</p>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
         <div className="space-y-8">
-          <Section icon={Stethoscope} title={t("diseases.symptoms")} items={d.symptoms} />
+          <Section icon={Stethoscope} title={t("diseases.symptoms")} items={LL(d.symptoms)} />
 
           <section className="space-y-3">
             <h3 className="flex items-center gap-2 text-xl font-bold">
               <Microscope className="h-5 w-5 text-primary" /> {t("diseases.cause")}
             </h3>
-            <p className="text-muted-foreground">{d.cause}</p>
+            <p className="text-muted-foreground">{L(d.cause)}</p>
           </section>
 
           <section className="space-y-3">
             <h3 className="flex items-center gap-2 text-xl font-bold">
               <Wind className="h-5 w-5 text-primary" /> {t("diseases.spread")}
             </h3>
-            <p className="text-muted-foreground">{d.spread}</p>
+            <p className="text-muted-foreground">{L(d.spread)}</p>
           </section>
 
           <section className="space-y-3">
             <h3 className="flex items-center gap-2 text-xl font-bold">
               <CloudRain className="h-5 w-5 text-primary" /> {t("diseases.conditions")}
             </h3>
-            <p className="text-muted-foreground">{d.conditions}</p>
+            <p className="text-muted-foreground">{L(d.conditions)}</p>
           </section>
 
-          <Section icon={Leaf} title={t("diseases.organic")} items={d.organic} />
-          <Section icon={FlaskConical} title={t("diseases.chemical")} items={d.chemical} />
-          <Section icon={ShieldCheck} title={t("diseases.prevention")} items={d.prevention} />
+          <Section icon={Leaf} title={t("diseases.organic")} items={LL(d.organic)} />
+          <Section icon={FlaskConical} title={t("diseases.chemical")} items={LL(d.chemical)} />
+          <Section icon={ShieldCheck} title={t("diseases.prevention")} items={LL(d.prevention)} />
         </div>
 
         <aside className="space-y-6">
@@ -140,7 +145,7 @@ export function CropDiseasesView() {
             variant="pill"
             size="xl"
             className="w-full gap-2"
-            onClick={() => openAdvisor("ask", { crop: d.crop, topic: d.disease })}
+            onClick={() => openAdvisor("ask", { crop: L(d.crop), topic: L(d.disease) })}
           >
             <MessagesSquare className="h-5 w-5" /> {t("diseases.ask")}
           </Button>
@@ -166,15 +171,15 @@ export function CropDiseasesView() {
             <span className="w-full text-center text-sm font-medium text-muted-foreground sm:w-auto sm:text-left">
               {t("diseases.select")}
             </span>
-            {["All", ...cropNames].map((c) => (
+            {[{ id: "all", name: null }, ...cropOptions].map((c) => (
               <button
-                key={c}
-                onClick={() => setCrop(c)}
+                key={c.id}
+                onClick={() => setCropId(c.id)}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
-                  crop === c ? "bg-primary text-white" : "glass hover:bg-accent"
+                  cropId === c.id ? "bg-primary text-white" : "glass hover:bg-accent"
                 }`}
               >
-                {c === "All" ? t("diseases.all") : c}
+                {c.name ? L(c.name) : t("diseases.all")}
               </button>
             ))}
           </Reveal>
@@ -190,18 +195,18 @@ export function CropDiseasesView() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between gap-2">
                         <Badge variant="outline" className={`text-[10px] uppercase tracking-widest ${typeStyles[d.type]}`}>
-                          {d.type}
+                          {t(`diseases.types.${d.type}`)}
                         </Badge>
                         <Bug className="h-4 w-4 shrink-0 text-lime" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{d.crop}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{L(d.crop)}</p>
                         <h3 className="text-xl font-bold leading-tight transition-colors group-hover:text-primary">
-                          {d.disease}
+                          {L(d.disease)}
                         </h3>
                       </div>
                       <ul className="space-y-1.5">
-                        {d.symptoms.slice(0, 3).map((s, k) => (
+                        {LL(d.symptoms).slice(0, 3).map((s, k) => (
                           <li key={k} className="flex items-start gap-2 text-sm text-muted-foreground">
                             <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-lime" />
                             <span className="line-clamp-2">{s}</span>

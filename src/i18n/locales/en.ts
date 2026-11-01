@@ -231,6 +231,14 @@ const en = {
     chemical: "Chemical control",
     prevention: "Prevention",
     ask: "Still unsure? Ask the community",
+    types: {
+      fungal: "Fungal",
+      bacterial: "Bacterial",
+      viral: "Viral",
+      pest: "Pest",
+      nematode: "Nematode",
+      nutrient: "Nutrient deficiency",
+    },
   },
   practices: {
     title: "Farming Practices",

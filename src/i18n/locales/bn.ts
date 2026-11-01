@@ -232,6 +232,14 @@ const bn: Dict = {
     chemical: "রাসায়নিক নিয়ন্ত্রণ",
     prevention: "প্রতিরোধ",
     ask: "এখনও নিশ্চিত নন? সম্প্রদায়কে জিজ্ঞাসা করুন",
+    types: {
+      fungal: "ছত্রাকজনিত",
+      bacterial: "ব্যাকটেরিয়াজনিত",
+      viral: "ভাইরাসজনিত",
+      pest: "পোকা",
+      nematode: "নিমাটোড",
+      nutrient: "পুষ্টির অভাব",
+    },
   },
   practices: {
     title: "চাষের পদ্ধতি",

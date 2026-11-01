@@ -232,6 +232,14 @@ const hi: Dict = {
     chemical: "रासायनिक नियंत्रण",
     prevention: "रोकथाम",
     ask: "अभी भी अनिश्चित हैं? समुदाय से पूछें",
+    types: {
+      fungal: "फंगल",
+      bacterial: "जीवाणुजनित",
+      viral: "विषाणुजनित",
+      pest: "कीट",
+      nematode: "सूत्रकृमि",
+      nutrient: "पोषक तत्व की कमी",
+    },
   },
   practices: {
     title: "खेती के तरीके",

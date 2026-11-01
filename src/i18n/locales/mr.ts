@@ -232,6 +232,14 @@ const mr: Dict = {
     chemical: "रासायनिक नियंत्रण",
     prevention: "प्रतिबंध",
     ask: "अजूनही शंका आहे? समुदायाला विचारा",
+    types: {
+      fungal: "बुरशीजन्य",
+      bacterial: "जिवाणूजन्य",
+      viral: "विषाणूजन्य",
+      pest: "कीटक",
+      nematode: "सूत्रकृमी",
+      nutrient: "अन्नद्रव्यांची कमतरता",
+    },
   },
   practices: {
     title: "शेती पद्धती",

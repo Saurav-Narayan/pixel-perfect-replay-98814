@@ -1,17 +1,15 @@
-export type DiseaseType =
-  | "Fungal"
-  | "Bacterial"
-  | "Viral"
-  | "Pest"
-  | "Nematode"
-  | "Nutrient deficiency";
+import type { LangCode } from "@/i18n";
+import type { Loc, LocList } from "@/i18n/localize";
+import { cropDiseasesHi } from "./cropDiseases.hi";
+import { cropDiseasesMr } from "./cropDiseases.mr";
+import { cropDiseasesBn } from "./cropDiseases.bn";
 
-export interface CropDisease {
-  id: string;
-  cropId: string;
+export type DiseaseType = "fungal" | "bacterial" | "viral" | "pest" | "nematode" | "nutrient";
+
+/** The user-facing text of one disease, in a single language. */
+export interface DiseaseText {
   crop: string;
   disease: string;
-  type: DiseaseType;
   symptoms: string[];
   cause: string;
   spread: string;
@@ -19,17 +17,44 @@ export interface CropDisease {
   organic: string[];
   chemical: string[];
   prevention: string[];
+}
+
+/** English source record, kept flat so the guide stays easy to edit. */
+interface BaseDisease extends DiseaseText {
+  id: string;
+  cropId: string;
+  type: DiseaseType;
   source: string;
   lastVerified: string;
 }
 
-export const cropDiseases: CropDisease[] = [
+/** A disease with every user-facing string available in all four languages. */
+export interface CropDisease {
+  id: string;
+  cropId: string;
+  type: DiseaseType;
+  crop: Loc;
+  disease: Loc;
+  symptoms: LocList;
+  cause: Loc;
+  spread: Loc;
+  conditions: Loc;
+  organic: LocList;
+  chemical: LocList;
+  prevention: LocList;
+  source: string;
+  lastVerified: string;
+}
+
+type TextKey = keyof DiseaseText;
+
+const baseDiseases: BaseDisease[] = [
   {
     id: "rice-blast",
     cropId: "rice-paddy",
     crop: "Rice (Paddy)",
     disease: "Rice Blast",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Spindle or diamond-shaped spots on leaves with grey-white centre and brown margin",
       "Lesions on leaf collar and nodes that turn black",
@@ -64,7 +89,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "rice-paddy",
     crop: "Rice (Paddy)",
     disease: "Bacterial Leaf Blight",
-    type: "Bacterial",
+    type: "bacterial",
     symptoms: [
       "Water-soaked stripes starting from leaf tip or margin",
       "Stripes turn yellow and then straw-white as leaves dry",
@@ -99,7 +124,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "wheat",
     crop: "Wheat",
     disease: "Yellow (Stripe) Rust",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Bright yellow powdery pustules in stripes along the veins of leaves",
       "Yellow powder rubs off on the hand when a leaf is touched",
@@ -134,7 +159,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "wheat",
     crop: "Wheat",
     disease: "Karnal Bunt",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Only part of the grain turns into black powdery mass",
       "A strong fishy or rotten smell from affected grains",
@@ -168,7 +193,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "sugarcane",
     crop: "Sugarcane",
     disease: "Red Rot",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Internal cane tissue turns red with white patches",
       "Cross-wise black dots visible inside the split cane",
@@ -203,7 +228,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "sugarcane",
     crop: "Sugarcane",
     disease: "Early Shoot Borer",
-    type: "Pest",
+    type: "pest",
     symptoms: [
       "Dead heart in 1-3 month old crop where the central shoot dries",
       "Bored hole at the base of the shoot with frass (waste) sticking out",
@@ -238,7 +263,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "cotton",
     crop: "Cotton",
     disease: "Pink Bollworm",
-    type: "Pest",
+    type: "pest",
     symptoms: [
       "Rosette flowers where petals are wrapped and do not open",
       "Small round holes on green bolls with pink larvae inside",
@@ -273,7 +298,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "cotton",
     crop: "Cotton",
     disease: "Cotton Leaf Curl Virus",
-    type: "Viral",
+    type: "viral",
     symptoms: [
       "Upward curling and cupping of leaves",
       "Thickening of veins with leaf-like growths (enations) on the underside",
@@ -308,7 +333,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "jute",
     crop: "Jute",
     disease: "Stem Rot",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Dark brown to black lesions on the stem near the base",
       "Bark shreds and peels off, exposing fibrous stem",
@@ -342,7 +367,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "jute",
     crop: "Jute",
     disease: "Jute Semilooper",
-    type: "Pest",
+    type: "pest",
     symptoms: [
       "Leaves with irregular holes and eaten margins",
       "Green larvae moving in a looping manner on leaves",
@@ -376,7 +401,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "maize",
     crop: "Maize",
     disease: "Fall Armyworm",
-    type: "Pest",
+    type: "pest",
     symptoms: [
       "Ragged holes and torn leaves",
       "Window-pane effect on young leaves where only the membrane is left",
@@ -411,7 +436,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "maize",
     crop: "Maize",
     disease: "Turcicum Leaf Blight",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Long elliptical greyish-green to tan lesions 2-15 cm long on leaves",
       "Lesions join together and blight large parts of the leaf",
@@ -446,7 +471,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "soybean",
     crop: "Soybean",
     disease: "Yellow Mosaic Virus",
-    type: "Viral",
+    type: "viral",
     symptoms: [
       "Bright yellow and green mosaic patches on leaves",
       "Puckering and crinkling of leaves",
@@ -481,7 +506,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "soybean",
     crop: "Soybean",
     disease: "Charcoal Rot",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Grey-black discolouration of the taproot and lower stem",
       "Bark shreds and peels from the lower stem",
@@ -515,7 +540,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "mustard",
     crop: "Mustard",
     disease: "Alternaria Blight",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Dark brown spots with concentric rings on leaves",
       "Elongated lesions on stems and pods",
@@ -550,7 +575,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "mustard",
     crop: "Mustard",
     disease: "Mustard Aphid",
-    type: "Pest",
+    type: "pest",
     symptoms: [
       "Dense colonies of grey-green aphids on shoots, flowers and pods",
       "Curling and yellowing of leaves",
@@ -585,7 +610,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "gram-chickpea",
     crop: "Gram (Chickpea)",
     disease: "Fusarium Wilt",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Drooping of leaves and petioles while they are still green",
       "Internal blackening of the stem when split open",
@@ -619,7 +644,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "gram-chickpea",
     crop: "Gram (Chickpea)",
     disease: "Gram Pod Borer (Helicoverpa)",
-    type: "Pest",
+    type: "pest",
     symptoms: [
       "Round holes on pods with larvae feeding inside",
       "Developing grain eaten away, leaving damaged seed",
@@ -654,7 +679,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "groundnut",
     crop: "Groundnut",
     disease: "Tikka (Leaf Spot)",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Circular dark brown spots with a yellow halo on the upper leaf surface",
       "Black spots on the lower leaf surface in late leaf spot",
@@ -689,7 +714,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "groundnut",
     crop: "Groundnut",
     disease: "White Grub",
-    type: "Pest",
+    type: "pest",
     symptoms: [
       "Wilting and drying of plants in patches",
       "Roots completely eaten so plants can be pulled out easily",
@@ -724,7 +749,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "potato",
     crop: "Potato",
     disease: "Late Blight",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Water-soaked pale green patches on leaves that turn brown to black",
       "White fungal growth on the lower surface of leaves in wet weather",
@@ -759,7 +784,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "potato",
     crop: "Potato",
     disease: "Bacterial Wilt",
-    type: "Bacterial",
+    type: "bacterial",
     symptoms: [
       "Sudden wilting of leaves while they are still green",
       "Brown discolouration of the vascular tissue",
@@ -793,7 +818,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "moong-bean",
     crop: "Moong Bean",
     disease: "Yellow Mosaic Virus",
-    type: "Viral",
+    type: "viral",
     symptoms: [
       "Bright yellow mosaic patches on leaves",
       "Puckering and distortion of leaves",
@@ -827,7 +852,7 @@ export const cropDiseases: CropDisease[] = [
     cropId: "moong-bean",
     crop: "Moong Bean",
     disease: "Cercospora Leaf Spot",
-    type: "Fungal",
+    type: "fungal",
     symptoms: [
       "Small brown spots with a greyish centre and dark border on leaves",
       "Spots join together to cover large leaf areas",
@@ -858,3 +883,39 @@ export const cropDiseases: CropDisease[] = [
     lastVerified: "2024-01-18",
   },
 ];
+
+const translations: Record<Exclude<LangCode, "en">, Record<string, DiseaseText>> = {
+  hi: cropDiseasesHi,
+  mr: cropDiseasesMr,
+  bn: cropDiseasesBn,
+};
+
+/** Every disease with its text resolved into all four languages. */
+export const cropDiseases: CropDisease[] = baseDiseases.map((disease) => {
+  const localize = <K extends TextKey>(key: K) => {
+    const en = disease[key];
+    return {
+      en,
+      hi: translations.hi[disease.id]?.[key] ?? en,
+      mr: translations.mr[disease.id]?.[key] ?? en,
+      bn: translations.bn[disease.id]?.[key] ?? en,
+    } as unknown as Loc & LocList;
+  };
+
+  return {
+    id: disease.id,
+    cropId: disease.cropId,
+    type: disease.type,
+    source: disease.source,
+    lastVerified: disease.lastVerified,
+    crop: localize("crop"),
+    disease: localize("disease"),
+    symptoms: localize("symptoms"),
+    cause: localize("cause"),
+    spread: localize("spread"),
+    conditions: localize("conditions"),
+    organic: localize("organic"),
+    chemical: localize("chemical"),
+    prevention: localize("prevention"),
+  };
+});
