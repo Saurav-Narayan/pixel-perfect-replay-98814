@@ -10,33 +10,91 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnimalsRouteImport } from './routes/animals'
+import { Route as CommunityRouteImport } from './routes/community'
+import { Route as CropsRouteImport } from './routes/crops'
+import { Route as PracticesRouteImport } from './routes/practices'
+import { Route as SchemesRouteImport } from './routes/schemes'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnimalsRoute = AnimalsRouteImport.update({
+  id: '/animals',
+  path: '/animals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CropsRoute = CropsRouteImport.update({
+  id: '/crops',
+  path: '/crops',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PracticesRoute = PracticesRouteImport.update({
+  id: '/practices',
+  path: '/practices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchemesRoute = SchemesRouteImport.update({
+  id: '/schemes',
+  path: '/schemes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/animals': typeof AnimalsRoute
+  '/community': typeof CommunityRoute
+  '/crops': typeof CropsRoute
+  '/practices': typeof PracticesRoute
+  '/schemes': typeof SchemesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/animals': typeof AnimalsRoute
+  '/community': typeof CommunityRoute
+  '/crops': typeof CropsRoute
+  '/practices': typeof PracticesRoute
+  '/schemes': typeof SchemesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/animals': typeof AnimalsRoute
+  '/community': typeof CommunityRoute
+  '/crops': typeof CropsRoute
+  '/practices': typeof PracticesRoute
+  '/schemes': typeof SchemesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    '/' | '/animals' | '/community' | '/crops' | '/practices' | '/schemes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/animals' | '/community' | '/crops' | '/practices' | '/schemes'
+  id:
+    | '__root__'
+    | '/'
+    | '/animals'
+    | '/community'
+    | '/crops'
+    | '/practices'
+    | '/schemes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnimalsRoute: typeof AnimalsRoute
+  CommunityRoute: typeof CommunityRoute
+  CropsRoute: typeof CropsRoute
+  PracticesRoute: typeof PracticesRoute
+  SchemesRoute: typeof SchemesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +106,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/animals': {
+      id: '/animals'
+      path: '/animals'
+      fullPath: '/animals'
+      preLoaderRoute: typeof AnimalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crops': {
+      id: '/crops'
+      path: '/crops'
+      fullPath: '/crops'
+      preLoaderRoute: typeof CropsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/practices': {
+      id: '/practices'
+      path: '/practices'
+      fullPath: '/practices'
+      preLoaderRoute: typeof PracticesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/schemes': {
+      id: '/schemes'
+      path: '/schemes'
+      fullPath: '/schemes'
+      preLoaderRoute: typeof SchemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnimalsRoute: AnimalsRoute,
+  CommunityRoute: CommunityRoute,
+  CropsRoute: CropsRoute,
+  PracticesRoute: PracticesRoute,
+  SchemesRoute: SchemesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
