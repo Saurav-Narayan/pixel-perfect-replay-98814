@@ -12,7 +12,7 @@ const links = [
 ] as const;
 
 const CONTACT_EMAIL = "examplemail1234@gmail.com";
-const CONTACT_PHONE = "9334347038";
+const CONTACT_PHONE = "9999999999";
 
 export function SiteFooter() {
   const { t } = useTranslation();

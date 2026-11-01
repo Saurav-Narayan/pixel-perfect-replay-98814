@@ -29,6 +29,16 @@ export function Hero() {
               <Link to="/animals">{t("hero.animals")}</Link>
             </Button>
           </div>
+          {t("hero.slogan") ? (
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.35 }}
+              className="mt-9 border-l-2 border-primary/70 pl-4 text-lg font-semibold italic text-primary sm:text-xl"
+            >
+              {t("hero.slogan")}
+            </motion.p>
+          ) : null}
         </motion.div>
 
         <motion.div

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const ids = ["hero", "about", "how", "learn", "faq"];
+const ids = ["hero", "about", "how", "learn", "faq", "feedback"];
 
 export function DotNav() {
   const [active, setActive] = useState("hero");
