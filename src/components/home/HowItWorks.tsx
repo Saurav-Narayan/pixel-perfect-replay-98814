@@ -17,7 +17,7 @@ export function HowItWorks() {
         <ol className="relative mt-14 grid gap-10 md:grid-cols-4 md:gap-6">
           <div className="absolute left-6 top-6 h-[calc(100%-3rem)] w-px bg-gradient-to-b from-primary to-transparent md:left-[12.5%] md:right-[12.5%] md:h-px md:w-auto md:bg-gradient-to-r md:from-primary md:via-lime md:to-primary" />
           {steps.map((s, i) => {
-            const Icon = icons[i];
+            const Icon = icons[i % icons.length]!;
             return (
               <Reveal key={i} delay={i * 0.1} className="relative flex gap-4 md:flex-col md:items-center md:text-center">
                 <div className="glass relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full">
