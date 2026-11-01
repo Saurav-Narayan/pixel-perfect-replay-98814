@@ -35,15 +35,15 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.15 }}
-          className="relative mx-auto w-full max-w-md"
+          className="relative mx-auto w-full max-w-sm"
         >
           <img
-            src="/image.png"
+            src="/true.jpg"
             alt="Krishi Setu"
-            width={896}
-            height={1088}
+            width={678}
+            height={1024}
             fetchPriority="high"
-            className="aspect-[4/5] w-full rounded-[2rem] border border-glass-border object-cover"
+            className="aspect-[2/3] w-full rounded-[2rem] border border-glass-border object-cover shadow-xl"
           />
         </motion.div>
       </div>
